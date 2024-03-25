@@ -1,17 +1,11 @@
+from fastapi import FastAPI
 from core.configs import settings
-from core.database import engine
-from models import all_models
+from api.v1.api import api_router
 
-async def create_tables() -> None:
-    print("Criando as tabelas no banco de dados")
-    async with engine.begin() as conn:
-        await conn.run_sync(settings.DBBaseModel.metadata.drop_all)
-
-        await conn.run_sync(settings.DBBaseModel.metadata.create_all)
-
-    print("Tabelas criadas com sucesso")
+app = FastAPI(title="Api sobre Profissões com Xampp")
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 if __name__ == "__main__":
-    import asyncio
+    import uvicorn
 
-    asyncio.run(create_tables())
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, log_level="info", reload=True)
